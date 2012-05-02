@@ -3,7 +3,7 @@
 
   Cart = window.Cart = function() {
     this.items = {};
-    this.events = {};
+    this.emitter = new Emitter();
   };
 
   Cart.fn = Cart.prototype;
@@ -23,13 +23,7 @@
   };
 
   Cart.fn.emit = function(event) {
-    if (!this.events[event]) {
-      return;
-    }
-
-    this.events[event].forEach(function(callback){
-      callback();
-    });
+    this.emitter.emit(event);
   };
 
   Cart.fn.removeItem = function(item, quantity) {
@@ -53,11 +47,7 @@
   };
 
   Cart.fn.on = function(event, callback) {
-    if (!this.events[event]) {
-      this.events[event] = [];
-    }
-
-    this.events[event].push(callback);
+    this.emitter.on(event, callback);
   };
 
   Cart.fn.total = function() {
