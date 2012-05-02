@@ -43,5 +43,30 @@ describe("Cart", function() {
         
         expect(cart.getItems()).toEqual([{description: "i1", price: 1.5, quantity: 2}]);
       });
+
+      it("removing one item from the cart", function(){
+        cart.addItem({description: "i1", price: 1.5});
+        cart.addItem({description: "i1", price: 1.5});
+
+        cart.removeItem({description: 'i1'},1);
+        expect(cart.getItems()).toEqual([{description: "i1", price: 1.5, quantity: 1}]); 
+      });
+
+      it('removing two items from the cart', function(){
+        cart.addItem({description: "i1", price: 1.5});
+        cart.addItem({description: "i1", price: 1.5});
+
+        cart.removeItem({description: 'i1'},2);
+        expect(cart.getItems()).toEqual([]);
+      });
+
+      it("removing a number of items greater than the number of the items on cart", function(){
+        cart.addItem({description: "i1", price: 1.5});
+        cart.addItem({description: "i1", price: 1.5});
+
+        cart.removeItem({description: 'i1'},3);
+        expect(cart.getItems()).toEqual([]);
+      });            
+
   });
 });

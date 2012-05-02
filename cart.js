@@ -19,6 +19,15 @@
     }
   };
 
+  Cart.fn.removeItem = function(item, quantity){    
+    if(this.items[item.description]){
+      var existingItem = this.items[item.description];
+      existingItem.quantity -= quantity;
+      if(existingItem.quantity <= 0) 
+        delete(this.items[existingItem.description]);
+    }
+  }
+
   Cart.fn.total = function() {
     var total = 0;
 
