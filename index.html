@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -6,6 +7,71 @@
   </head>
 
   <body>
+    <ul id="products"></ul>
+    <p id="total"></p>
+
+    <script id="product-item" type="text/html">
+      <li data-id="{{description}}">
+        {{description}}
+        <strong>{{quantity}} x R${{price}}</strong> =
+        <strong>R${{total}}</strong>
+
+        <select data-selected="{{quantity}}">
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+        </select>
+      </li>
+    </script>
+
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="handlebars.js"></script>
     <script type="text/javascript" src="cart.js"></script>
+    <script type="text/javascript">
+      var Template = {
+        productItem: Handlebars.compile($("#product-item").html())
+      };
+
+      var cart = new Cart();
+
+      cart.on("update", function(){
+        $("#products").empty();
+
+        cart.getItems().forEach(function(item){
+          $("#products").append(Template.productItem(item));
+        });
+      });
+
+      cart.on("update", function(){
+        $("#total").text("R$" + cart.total());
+      });
+
+      cart.on("update", function(){
+        $("select[data-selected]").each(function(){
+          this.value = $(this).data("selected");
+        });
+      });
+
+      cart.addItem({description: "Macbook", price: 3300});
+      cart.addItem({description: "iPhone", price: 2000, quantity: 2});
+      cart.addItem({description: "iPhone 4S", price: 2000, quantity: 2});
+      cart.addItem({description: "iPhone 3Gs", price: 2000, quantity: 2});
+      cart.addItem({description: "iPhone 1", price: 2000, quantity: 2});
+      cart.addItem({description: "iPod", price: 2000, quantity: 2});
+
+      $("#products").on("change", "select", function(){
+        var item = cart.getItem($(this).parent().data("id"));
+        var value = parseInt(this.value, 10);
+
+        if (item.quantity < value) {
+          cart.addItem({description: item.description, quantity: value - item.quantity});
+        } else {
+          cart.removeItem(item, item.quantity - value);
+        }
+      });
+    </script>
   </body>
 </html>

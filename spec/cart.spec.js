@@ -56,7 +56,7 @@ describe("Cart", function() {
 
       it("removing one item from the cart", function(){
         cart.removeItem({description: 'i1'},1);
-        expect(cart.getItems()).toEqual([{description: "i1", price: 1.5, quantity: 1}]); 
+        expect(cart.getItems()).toEqual([{description: "i1", price: 1.5, quantity: 1, total: Function}]); 
       });
 
       it('removing two items from the cart', function(){

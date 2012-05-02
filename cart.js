@@ -3,6 +3,7 @@
 
   Cart = window.Cart = function() {
     this.items = {};
+    this.events = {};
   };
 
   Cart.fn = Cart.prototype;
@@ -17,23 +18,54 @@
     } else {
       this.items[item.description] = item;
     }
+
+    this.emit("update");
   };
 
-  Cart.fn.removeItem = function(item, quantity){    
-    if(this.items[item.description]){
-      var existingItem = this.items[item.description];
-      existingItem.quantity -= quantity;
-      if(existingItem.quantity <= 0) 
-        delete(this.items[existingItem.description]);
+  Cart.fn.emit = function(event) {
+    if (!this.events[event]) {
+      return;
     }
-  }
+
+    this.events[event].forEach(function(callback){
+      callback();
+    });
+  };
+
+  Cart.fn.removeItem = function(item, quantity) {
+    var existing = this.items[item.description];
+
+    if (!existing) {
+      return;
+    }
+
+    existing.quantity -= quantity;
+
+    if (existing.quantity <= 0) {
+      delete(this.items[item.description]);
+    }
+
+    this.emit("update");
+  };
+
+  Cart.fn.getItem = function(description) {
+    return this.items[description];
+  };
+
+  Cart.fn.on = function(event, callback) {
+    if (!this.events[event]) {
+      this.events[event] = [];
+    }
+
+    this.events[event].push(callback);
+  };
 
   Cart.fn.total = function() {
     var total = 0;
 
     for (var name in this.items) {
       if (this.items.hasOwnProperty(name)) {
-        total += this.items[name].quantity * this.items[name].price;
+        total += this.items[name].total();
       }
     }
 
@@ -62,5 +94,9 @@
         this[name] = attributes[name];
       }
     }
+  };
+
+  Cart.Item.prototype.total = function() {
+    return this.quantity * this.price;
   };
 })(window);
